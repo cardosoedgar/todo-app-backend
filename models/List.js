@@ -8,6 +8,8 @@ module.exports = function(sequelize) {
         notEmpty: {msg: 'Invalid list name.'}
       }
     }
+  }, {
+    timestamps: false
   });
 
   return List

@@ -34,6 +34,9 @@ sequelize.sync();
 
 (function(models){
    models.List.hasMany(models.Task);
+   models.Task.belongsTo(models.List);
+  //  models.List.create({name: 'Todo'});
+  //  models.List.create({name: 'Done'});
 })(module.exports);
 
 module.exports.sequelize = sequelize;

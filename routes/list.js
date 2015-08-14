@@ -11,10 +11,13 @@ module.exports = function(app) {
 
     listRoute.getList = function(req, res){
        var id = req.params.id;
-       List.findOne({id: id}).then(function(list){
+       console.log(id);
+       List.findOne({where: {id: id}}).then(function(list){
+         console.log(list);
          if(list) {
            list.getTasks().then(function(tasks){
-              res.json({success: true, data: tasks});
+             console.log(tasks);
+              res.json({success: true, list: list, data: tasks});
            });
          }
        });
@@ -25,11 +28,13 @@ module.exports = function(app) {
         var taskName = req.body.name;
 
         List.findOne({where: {id:listId}}).then(function(list){
-          Task.create({name: taskName}).then(function(task) {
-            list.addTask(task).then(function(teste){
-               console.log(teste);
+          if(list) {
+            Task.create({name: taskName}).then(function(task) {
+              list.addTask(task).then(function(log){
+                  res.json({success: true, message: 'Task added to list.'});
+              });
             });
-          });
+          }
         });
     };
 
@@ -52,12 +57,17 @@ module.exports = function(app) {
     listRoute.deleteList = function(req, res) {
        var id = req.params.id;
 
-       List.destroy({where: {id: id}}).then(function(success){
-          if(success) {
-            res.json({success: true, msg:'List deleted.'});
-          } else {
-            res.json({success: false, msg: 'List not found.'});
-          }
+       //delete tasks in list then delete the list itself
+       List.findOne({where: {id:id}}).then(function(list){
+          Task.destroy({where: {listId:list.id}}).then(function(success){
+              list.destroy().then(function(success){
+                if(success) {
+                  res.json({success: true, msg:'List deleted.'});
+                } else {
+                  res.json({success: false, msg: 'List not found.'});
+                }
+              });
+          });
        });
      };
 

@@ -8,6 +8,8 @@ module.exports = function(sequelize) {
         notEmpty: {msg: 'Invalid task name.'}
       }
     }
+  }, {
+    timestamps: false
   });
 
   return Task

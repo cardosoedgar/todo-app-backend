@@ -43,7 +43,6 @@ module.exports = function(sequelize) {
       type: DataTypes.STRING
     }
   }, {
-    tableName: 'User',
     timestamps: false,
     instanceMethods: {
       toJSON: function () {
