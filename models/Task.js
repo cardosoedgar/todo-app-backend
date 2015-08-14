@@ -9,7 +9,7 @@ module.exports = function(sequelize) {
       }
     }
   }, {
-    timestamps: false
+    timestamps: false,
   });
 
   return Task

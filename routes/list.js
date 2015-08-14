@@ -4,19 +4,16 @@ module.exports = function(app) {
     var List = app.get('models').List;
 
     listRoute.getAllLists = function(req, res){
-       List.findAll().then(function(lists) {
-          res.json({success: true, data: lists});
-       });
+       List.findAll({include: [{model: Task, attributes:['id','name']}]}).then(function(lists) {
+          res.json({success:true, lists:lists});
+       })
     };
 
     listRoute.getList = function(req, res){
        var id = req.params.id;
-       List.findOne({where: {id: id}}).then(function(list){
-         if(list) {
-           list.getTasks().then(function(tasks){
-              res.json({success: true, list: list, data: tasks});
-           });
-         }
+       List.findOne({where: {id: id}, include: [{model: Task, attributes:['id','name']}]})
+            .then(function(list){
+              res.json({sucess:true, list: list});
        });
     };
 
@@ -41,13 +38,9 @@ module.exports = function(app) {
         List.create({
            name: name
         }).then(function(list) {
-            if(list) {
-               res.json({success: true, message: 'List created.', data:list });
-            } else {
-               res.json({success: false, message: 'An error ocurred. Try again later.'});
-            }
+             res.json({success: true, message: 'List created.', data:list });
         }).catch(function(err){
-            res.json({success: false, message: err.errors[0].message});
+             res.json({success: false, message: err.errors[0].message});
         });
     };
 
@@ -55,15 +48,15 @@ module.exports = function(app) {
        var id = req.params.id;
        //delete tasks in list then delete the list itself
        List.findOne({where: {id:id}}).then(function(list){
-          Task.destroy({where: {listId:list.id}}).then(function(success){
-              list.destroy().then(function(success){
-                if(success) {
-                  res.json({success: true, msg:'List deleted.'});
-                } else {
-                  res.json({success: false, msg: 'List not found.'});
-                }
-              });
-          });
+         if(list) {
+            Task.destroy({where: {listId:list.id}}).then(function(success){
+                list.destroy().then(function(success){
+                    res.json({success: true, msg:'List deleted.'});
+                });
+            });
+          } else {
+            res.json({success: false, msg: 'List not found.'});
+          }
        });
      };
 

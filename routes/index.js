@@ -6,15 +6,14 @@ module.exports = function (app) {
   var task = require('./task')(app); //add, delete, update, change list, mark done
   var list = require('./list')(app); //add, delete, update, mark all tasks done, archive
 
-//mark done
-  router.put('/taskdone/:id', task.markTaskDone);
-  router.put('/listdone/:id', list.markListDone);
 //tasks
+  router.put('/task/:id/done', task.markTaskDone);
   router.post('/task', task.addTask);
   router.put('/task/:id', task.updateTask);
   router.delete('/task/:id', task.deleteTask);
 
 //list
+  router.put('/list/:id/done', list.markListDone);
   router.post('/list/:id/task', list.addTaskToList);
   router.post('/list', list.addList);
   router.get('/lists', list.getAllLists);
