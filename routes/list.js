@@ -4,22 +4,34 @@ module.exports = function(app) {
     var List = app.get('models').List;
 
     listRoute.getAllLists = function(req, res){
-       List.findAll({include: [{model: Task, attributes:['id','name']}]}).then(function(lists) {
+       List.findAll({
+         include: [{model: Task, attributes:['id','name']}]
+       }).then(function(lists) {
           res.json({success:true, lists:lists});
        })
     };
 
     listRoute.getList = function(req, res){
        var id = req.params.id;
-       List.findOne({where: {id: id}, include: [{model: Task, attributes:['id','name']}]})
-            .then(function(list){
+       List.findOne({
+         where: {id: id},
+         include: [{model: Task, attributes:['id','name']}]
+       }).then(function(list){
+           if(list)
               res.json({sucess:true, list: list});
+           else
+              res.json({sucess:false, message: 'List not found.'});
        });
     };
 
     listRoute.addTaskToList = function(req, res) {
         var listId = req.params.id;
         var taskName = req.body.name;
+
+        if(!taskName || taskName == '') {
+            res.json({sucess: false, message: 'Task name must be provided'});
+            return;
+        }
 
         List.findOne({where: {id:listId}}).then(function(list){
           if(list) {
@@ -28,12 +40,19 @@ module.exports = function(app) {
                   res.json({success: true, message: 'Task added to list.'});
               });
             });
+          } else {
+             res.json({sucess: false, message: 'List not found.'});
           }
         });
     };
 
     listRoute.addList = function(req, res){
         var name = req.body.name;
+
+        if(!name || name == '') {
+            res.json({sucess: false, message: 'Task name must be provided'});
+            return;
+        }
 
         List.create({
            name: name
@@ -51,11 +70,11 @@ module.exports = function(app) {
          if(list) {
             Task.destroy({where: {listId:list.id}}).then(function(success){
                 list.destroy().then(function(success){
-                    res.json({success: true, msg:'List deleted.'});
+                    res.json({success: true, message:'List deleted.'});
                 });
             });
           } else {
-            res.json({success: false, msg: 'List not found.'});
+            res.json({success: false, message: 'List not found.'});
           }
        });
      };
@@ -64,16 +83,23 @@ module.exports = function(app) {
         var id = req.params.id;
         var updatedName = req.body.name;
         List.update({name: updatedName}, {where: {id:id}}).then(function(updated) {
-             res.json({success: true, msg:'List updated.'});
+             if(update > 0)
+                res.json({success: true, message:'List updated.'});
+             else
+                res.json({sucess: false, message: 'List not found.'});
         });
      };
 
      listRoute.markListDone = function(req, res) {
         var id = req.params.id;
         List.findOne({where: {name: 'Done'}}).then(function(list){
-          Task.update({ListId: list.id}, {where: {ListId: id}}).then(function(updated) {
-              res.json({success: true, msg: 'All tasks marked as done.'});
-          });
+          if(list) {
+            Task.update({ListId: list.id}, {where: {ListId: id}}).then(function(updated) {
+                res.json({success: true, message: 'All tasks marked as done.'});
+            });
+          } else {
+            res.json({sucess: false, message: 'List not found.'});
+          }
         });
      };
 
