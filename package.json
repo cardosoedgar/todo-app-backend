@@ -1,0 +1,17 @@
+{
+  "name": "todo-app-backend",
+  "main": "app.js",
+  "version": "0.1.0",
+  "dependencies": {
+    "body-parser": "^1.4.2",
+    "express": "^4.5.1",
+    "method-override": "^2.0.2",
+    "mysql": "^2.5.4",
+    "sequelize": "^3.5.1",
+    "node-uuid": "^1.4.0",
+    "jsonwebtoken" : "^5.0.4",
+    "bcrypt" : "^0.8.4",
+    "nodemailer" : "^1.0",
+    "validator" : "^4.0.2"
+  }
+}
