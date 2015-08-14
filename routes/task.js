@@ -56,13 +56,25 @@ module.exports = function(app) {
    tasksRoute.updateTask = function(req, res) {
       var id = req.params.id;
       var updatedName = req.body.name;
+      var listId = req.body.list_id;
+      var data = {};
 
-      if(!updatedName || updatedName == '') {
-          res.json({sucess: false, message: 'Task name must be provided'});
-          return;
+      if(listId || listId != '')
+         data.ListId = listId;
+
+      if(updatedName && updatedName != '') {
+          data.name = updatedName;
+          console.log('entrou no if');
       }
 
-      Task.update({name: updatedName}, {where: {id:id}}).then(function(updated){
+      if(data == {}){
+        res.json({sucess: false, message: 'Task name must be provided'});
+        return;
+      }
+
+      console.log(data);
+
+      Task.update(data, {where: {id:id}}).then(function(updated){
          if(updated > 0) {
            res.json({success: true, msg:'Task updated.'});
          } else {

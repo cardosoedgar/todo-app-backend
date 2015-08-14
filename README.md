@@ -2,7 +2,7 @@
 
 ## Properties
 
-**Task Properties** : name
+**Task Properties** : name, list_id *(only for updating task)*
 
 **List Properties** : name
 
@@ -12,7 +12,7 @@
 
 *POST* **/task** - create task in default list (Todo)
 
-*PUT* **/task/:id** - update task name
+*PUT* **/task/:id** - update task
 
 *DELETE* **/task/:id** - delete task
 
