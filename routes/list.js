@@ -11,12 +11,9 @@ module.exports = function(app) {
 
     listRoute.getList = function(req, res){
        var id = req.params.id;
-       console.log(id);
        List.findOne({where: {id: id}}).then(function(list){
-         console.log(list);
          if(list) {
            list.getTasks().then(function(tasks){
-             console.log(tasks);
               res.json({success: true, list: list, data: tasks});
            });
          }
@@ -56,7 +53,6 @@ module.exports = function(app) {
 
     listRoute.deleteList = function(req, res) {
        var id = req.params.id;
-
        //delete tasks in list then delete the list itself
        List.findOne({where: {id:id}}).then(function(list){
           Task.destroy({where: {listId:list.id}}).then(function(success){
@@ -74,15 +70,19 @@ module.exports = function(app) {
      listRoute.updateList = function(req, res) {
         var id = req.params.id;
         var updatedName = req.body.name;
-
-        List.update({name: updatedName}, {where: {id:id}}).then(function(updated){
-           if(updated) {
+        List.update({name: updatedName}, {where: {id:id}}).then(function(updated) {
              res.json({success: true, msg:'List updated.'});
-           } else {
-             res.json({success: false, msg: 'List not found.'});
-           }
         });
-     }
+     };
+
+     listRoute.markListDone = function(req, res) {
+        var id = req.params.id;
+        List.findOne({where: {name: 'Done'}}).then(function(list){
+          Task.update({ListId: list.id}, {where: {ListId: id}}).then(function(updated) {
+              res.json({success: true, msg: 'All tasks marked as done.'});
+          });
+        });
+     };
 
     return listRoute;
 };
