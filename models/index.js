@@ -23,7 +23,7 @@ var sequelize = new Sequelize(
 );
 
 var models = [
-  'List', 'Task'
+  'List', 'Task', 'User'
 ];
 
 models.forEach(function(model) {
@@ -31,12 +31,13 @@ models.forEach(function(model) {
 });
 
 sequelize.sync();
+// sequelize.sync({force: true});  //force the DB to drop all tables
 
 (function(models){
    models.List.hasMany(models.Task);
    models.Task.belongsTo(models.List);
-  //  models.List.create({name: 'Todo'});
-  //  models.List.create({name: 'Done'});
+   models.User.hasMany(models.List, {foreignKey: 'contactId'});
+   models.List.belongsTo(models.User, {foreignKey: 'contactId'});
 })(module.exports);
 
 module.exports.sequelize = sequelize;

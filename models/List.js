@@ -7,6 +7,9 @@ module.exports = function(sequelize) {
       validate: {
         notEmpty: {msg: 'Invalid list name.'}
       }
+    },
+    userId: {
+      type: DataTypes.STRING
     }
   }, {
     timestamps: false

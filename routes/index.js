@@ -21,9 +21,13 @@ module.exports = function (app) {
   router.put('/list/:id', list.updateList);
   router.delete('/list/:id', list.deleteList);
 
+//external
+  router.post('/login', external.login);
+  router.post('/signup', external.signup);
+
   //error if nothing else runs.
   router.get('*', function(req, res) {
-    res.json({success: false, message: 'Page Not Found'});
+    res.json({error: 404, message: 'Page Not Found.'});
   });
 
   return router;

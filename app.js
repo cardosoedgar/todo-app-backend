@@ -9,6 +9,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 
 app.set('models', require('./models'));
+app.set('Utils', require('./Utils'));
 
 var router = require('./routes')(app);
 app.use('/todo/api', router);

@@ -3,6 +3,7 @@ module.exports = function(sequelize) {
   var User = sequelize.define("User", {
     id: {
       type: DataTypes.STRING,
+      primaryKey: true,
       allowNull: false,
       validate: {
         notEmpty: true,
@@ -34,8 +35,8 @@ module.exports = function(sequelize) {
       validate: {
         notEmpty: { msg: 'Invalid password.'},
         len: {
-          args: [6,100],
-          msg: 'Password must contain between 6 and 20 characteres.'
+           args: [6,255],
+           msg: 'Password must contain 6 characteres or more.'
         }
       }
     },

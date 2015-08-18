@@ -8,7 +8,7 @@ module.exports = function(app) {
          include: [{model: Task, attributes:['id','name']}]
        }).then(function(lists) {
           res.json({success:true, lists:lists});
-       })
+       });
     };
 
     listRoute.getList = function(req, res){
