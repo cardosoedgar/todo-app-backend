@@ -47,5 +47,34 @@ module.exports = function(app) {
          });
     };
 
+    externalRoutes.updatePassword = function(req, res) {
+       var userId = req.body.user_id;
+       var newPassword = req.body.new_password;
+       var confirmPassword = req.body.confirm_password;
+       var oldPassword = req.body.old_password;
+
+       if(newPassword !== confirmPassword) {
+          res.json({success: false, message: 'Passwords does not match.'});
+          return;
+       }
+
+       User.findOne({where: {id: userId}}).then(function(user){
+          if(!user) {
+            res.json({success: false, message: 'User not found.'});
+            return;
+          }
+
+          if(!crypt.compareSync(oldPassword, user.password)) {
+            res.json({success: false, message: 'Password is wrong.'});
+            return;
+          }
+
+          newPassword = crypt.hashSync(newPassword, crypt.genSaltSync(10));
+          user.update({password: newPassword}, {where: {id: userId}}).then(function(updated) {
+              res.json({success: true, message: 'Password updated'});
+          });
+       });
+    };
+
     return externalRoutes;
 };

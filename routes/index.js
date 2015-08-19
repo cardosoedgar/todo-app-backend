@@ -24,6 +24,7 @@ module.exports = function (app) {
 //external
   router.post('/login', external.login);
   router.post('/signup', external.signup);
+  router.post('/updatepassword', external.updatePassword);
 
   //error if nothing else runs.
   router.get('*', function(req, res) {
