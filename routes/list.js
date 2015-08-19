@@ -34,15 +34,16 @@ module.exports = function(app) {
         }
 
         List.findOne({where: {id:listId}}).then(function(list){
-          if(list) {
-            Task.create({name: taskName}).then(function(task) {
-              list.addTask(task).then(function(log){
-                  res.json({success: true, message: 'Task added to list.'});
-              });
-            });
-          } else {
-             res.json({sucess: false, message: 'List not found.'});
+          if(!list) {
+            res.json({sucess: false, message: 'List not found.'});
+            return;
           }
+
+          Task.create({name: taskName}).then(function(task) {
+            list.addTask(task).then(function(log){
+                res.json({success: true, message: 'Task added to list.'});
+            });
+          });
         });
     };
 
@@ -58,24 +59,22 @@ module.exports = function(app) {
            name: name
         }).then(function(list) {
              res.json({success: true, message: 'List created.', data:list });
-        }).catch(function(err){
-             res.json({success: false, message: err.errors[0].message});
         });
     };
 
     listRoute.deleteList = function(req, res) {
        var id = req.params.id;
-       //delete tasks in list then delete the list itself
        List.findOne({where: {id:id}}).then(function(list){
-         if(list) {
-            Task.destroy({where: {listId:list.id}}).then(function(success){
-                list.destroy().then(function(success){
-                    res.json({success: true, message:'List deleted.'});
-                });
-            });
-          } else {
+         if(!list) {
             res.json({success: false, message: 'List not found.'});
+            return;
           }
+
+          Task.destroy({where: {listId:list.id}}).then(function(success){
+              list.destroy().then(function(success){
+                  res.json({success: true, message:'List deleted.'});
+              });
+          });
        });
      };
 
@@ -83,23 +82,24 @@ module.exports = function(app) {
         var id = req.params.id;
         var updatedName = req.body.name;
         List.update({name: updatedName}, {where: {id:id}}).then(function(updated) {
-             if(update > 0)
-                res.json({success: true, message:'List updated.'});
-             else
-                res.json({sucess: false, message: 'List not found.'});
+           if(update > 0)
+              res.json({success: true, message:'List updated.'});
+           else
+              res.json({sucess: false, message: 'List not found.'});
         });
      };
 
      listRoute.markListDone = function(req, res) {
         var id = req.params.id;
         List.findOne({where: {name: 'Done'}}).then(function(list){
-          if(list) {
-            Task.update({ListId: list.id}, {where: {ListId: id}}).then(function(updated) {
-                res.json({success: true, message: 'All tasks marked as done.'});
-            });
-          } else {
+          if(!list) {
             res.json({sucess: false, message: 'List not found.'});
+            return;
           }
+
+          Task.update({ListId: list.id}, {where: {ListId: id}}).then(function(updated) {
+              res.json({success: true, message: 'All tasks marked as done.'});
+          });
         });
      };
 

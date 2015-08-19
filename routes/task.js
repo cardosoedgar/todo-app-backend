@@ -5,7 +5,6 @@ module.exports = function(app) {
 
   tasksRoute.addTask = function(req, res) {
       var name = req.body.name;
-
       if(!name || name == '') {
           res.json({sucess: false, message: 'Task name must be provided'});
           return;
@@ -18,8 +17,6 @@ module.exports = function(app) {
              list.addTask(task).then(function(success) {
                 res.json({success: true, message: 'Task created.', data:task });
              });
-        }).catch(function(err){
-            res.json({success: false, message: err});
         });
     });
   };
@@ -28,28 +25,25 @@ module.exports = function(app) {
     var id = req.params.id;
     List.findOne({where: {name: 'Done'}}).then(function(list){
       Task.findOne({where: {id: id} }).then(function(task) {
-          if(task) {
-             task.setList(list).then(function(success) {
-                res.json({success: true, message: 'Task marked as done.', data:task });
-             });
-          } else {
-             res.json({success: false, message: 'Task not found.'});
-           }
-      }).catch(function(err){
-          res.json({success: false, message: err});
+          if(!task) {
+            res.json({success: false, message: 'Task not found.'});
+            return;
+          }
+
+          task.setList(list).then(function(success) {
+             res.json({success: true, message: 'Task marked as done.', data:task });
+          });
       });
     });
   };
 
   tasksRoute.deleteTask = function(req, res) {
      var id = req.params.id;
-
      Task.destroy({where: {id: id}}).then(function(success){
-        if(success) {
+        if(success)
           res.json({success: true, msg:'Task deleted.'});
-        } else {
+        else
           res.json({success: false, msg: 'Task not found.'});
-        }
      });
    };
 
@@ -64,7 +58,6 @@ module.exports = function(app) {
 
       if(updatedName && updatedName != '') {
           data.name = updatedName;
-          console.log('entrou no if');
       }
 
       if(data == {}){
@@ -72,14 +65,11 @@ module.exports = function(app) {
         return;
       }
 
-      console.log(data);
-
       Task.update(data, {where: {id:id}}).then(function(updated){
-         if(updated > 0) {
+         if(updated > 0)
            res.json({success: true, msg:'Task updated.'});
-         } else {
+         else
            res.json({success: false, msg: 'Task not found.'});
-         }
       });
    }
 
