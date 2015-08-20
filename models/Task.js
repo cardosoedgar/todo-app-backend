@@ -5,7 +5,16 @@ module.exports = function(sequelize) {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: {msg: 'Invalid task name.'}
+        notEmpty: {msg: 'Invalid task name.'},
+        isUnique: function (name, done) {
+            var self = this;
+            Task.find({ where: {name: name,listId:self.listId}}).done(function (name) {
+                    if (name) {
+                        done(new Error('Task already exist in this list.'));
+                    }
+                    done();
+            });
+        }
       }
     }
   }, {

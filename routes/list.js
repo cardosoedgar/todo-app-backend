@@ -7,7 +7,8 @@ module.exports = function(app) {
        var userId = req.credentials.userId;
        List.findAll({
          where: {userId: userId},
-         include: [{model: Task, attributes:['id','name']}]
+         include: [{model: Task, attributes:['id','name']}],
+         order: [['name','ASC']]
        }).then(function(lists) {
           res.json({success:true, lists:lists});
        });
@@ -111,6 +112,27 @@ module.exports = function(app) {
           Task.update({ListId: list.id}, {where: {ListId: id}}).then(function(updated) {
               res.json({success: true, message: 'All tasks marked as done.'});
           });
+        });
+     };
+
+     listRoute.syncLists = function(req, res) {
+        var userId = req.credentials.userId;
+        var lists = req.body.lists;
+        var sequelize = app.get('models').sequelize;
+
+        //TODO ajeitar essa transcation
+        return sequelize.transaction(function(t){
+          lists.forEach(function(list){
+               return List.findOrCreate({where: { name: list.name, userId: userId}, transcation: t}).spread(function(data, created){
+                 list.Tasks.forEach(function(task){
+                     return Task.findOrCreate({where: {name: task.name, ListId: data.id},transcation: t});
+                 });
+               });
+          });
+        }).then(function(success){
+            listRoute.getAllLists(req,res);
+        }).catch(function(err) {
+            listRoute.getAllLists(req,res);
         });
      };
 

@@ -22,6 +22,7 @@ module.exports = function (app) {
   router.delete('/api/task/:id', task.deleteTask);
 
 //list
+  router.put('/api/list/:id/task/:id/done', task.markTaskDone);
   router.put('/api/list/:id/done', list.markListDone);
   router.post('/api/list/:id/task', list.addTaskToList);
   router.post('/api/list', list.addList);
@@ -29,6 +30,7 @@ module.exports = function (app) {
   router.get('/api/list/:id', list.getList);
   router.put('/api/list/:id', list.updateList);
   router.delete('/api/list/:id', list.deleteList);
+  router.post('/api/lists/sync', list.syncLists);
 
   //error if nothing else runs.
   router.get('*', function(req, res) {
