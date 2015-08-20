@@ -2,15 +2,11 @@
 
 ## Public URLs
 
-#### External URLs
-
 *POST* **/login** - email and password
 
 *POST* **/signup** - email, password and name (optional)
 
 ## Private URLs (need x-access-token)
-
-#### Internal URLs
 
 *PUT* **/api/resetpassword** - old_password, new_password, confirm_password
 
