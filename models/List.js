@@ -12,7 +12,14 @@ module.exports = function(sequelize) {
       type: DataTypes.STRING
     }
   }, {
-    timestamps: false
+    timestamps: false,
+    instanceMethods: {
+      toJSON: function () {
+        var result = this.get({plain:true});
+        delete result['userId'];
+        return result;
+      }
+    }
   });
 
   return List

@@ -1,6 +1,9 @@
-exports.createToken = function(email) {
+exports.createToken = function(user) {
    var jwt = require('jsonwebtoken');
-   return jwt.sign(email, require('./secret'), {
-      expiresInMinutes: 1440
-    });
+   var payload = {
+      userId: user.id,
+      userSecret: user.secret
+   };
+
+   return jwt.sign(payload, require('./secret'));
 };

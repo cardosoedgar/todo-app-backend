@@ -23,7 +23,7 @@ var sequelize = new Sequelize(
 );
 
 var models = [
-  'List', 'Task', 'User'
+  'User', 'List', 'Task',
 ];
 
 models.forEach(function(model) {
@@ -36,8 +36,8 @@ sequelize.sync();
 (function(models){
    models.List.hasMany(models.Task);
    models.Task.belongsTo(models.List);
-   models.User.hasMany(models.List, {foreignKey: 'contactId'});
-   models.List.belongsTo(models.User, {foreignKey: 'contactId'});
+   models.User.hasMany(models.List, {foreignKey: 'userId'});
+   models.List.belongsTo(models.User, {foreignKey: 'userId'});
 })(module.exports);
 
 module.exports.sequelize = sequelize;

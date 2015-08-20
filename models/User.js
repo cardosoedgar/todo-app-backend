@@ -40,7 +40,7 @@ module.exports = function(sequelize) {
         }
       }
     },
-    access_token: {
+    secret: {
       type: DataTypes.STRING
     }
   }, {
@@ -49,6 +49,7 @@ module.exports = function(sequelize) {
       toJSON: function () {
         var result = this.get({plain:true});
         delete result['password'];
+        delete result['secret'];
         return result;
       }
     }

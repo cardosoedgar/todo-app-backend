@@ -1,6 +1,8 @@
 module.exports = function(app) {
     var externalRoutes = {};
     var User = app.get('models').User;
+    var List = app.get('models').List;
+    var Task = app.get('models').Task;
     var Utils = app.get('Utils');
     var uuid = require('node-uuid');
     var crypt = require('bcrypt');
@@ -17,9 +19,11 @@ module.exports = function(app) {
            return;
          }
 
-          user.access_token = Utils.createToken(user.email);
-          user.update({access_token: user.access_token}, {where: {id:user.id}}).then(function(updated) {
-              res.json({success: true, message: 'You are logged in.', user: user});
+          var access_token = Utils.createToken(user);
+          List.findAll({
+            include: [{model: Task, attributes:['id','name']}]
+          }).then(function(lists) {
+             res.json({success: true, message: 'You are logged in.', user: user, token: access_token, lists: lists});
           });
       });
     };
@@ -37,9 +41,10 @@ module.exports = function(app) {
                res.json({success: false, message: result.errors[0].message});
                return;
             }
-
+             user.secret = uuid.v1();
              user.password = crypt.hashSync(req.body.password, crypt.genSaltSync(10));
-             User.create(user).then(function(result) {
+             User.create(user).then(function(user) {
+                createBasicListsForUser(user.id, app);
                 res.json({success: true, message: 'You can now login.'});
              }).catch(function(err) {
                 res.json({success: false, message: err.errors[0].message});
@@ -47,34 +52,21 @@ module.exports = function(app) {
          });
     };
 
-    externalRoutes.updatePassword = function(req, res) {
-       var userId = req.body.user_id;
-       var newPassword = req.body.new_password;
-       var confirmPassword = req.body.confirm_password;
-       var oldPassword = req.body.old_password;
-
-       if(newPassword !== confirmPassword) {
-          res.json({success: false, message: 'Passwords does not match.'});
-          return;
-       }
-
-       User.findOne({where: {id: userId}}).then(function(user){
-          if(!user) {
-            res.json({success: false, message: 'User not found.'});
-            return;
-          }
-
-          if(!crypt.compareSync(oldPassword, user.password)) {
-            res.json({success: false, message: 'Password is wrong.'});
-            return;
-          }
-
-          newPassword = crypt.hashSync(newPassword, crypt.genSaltSync(10));
-          user.update({password: newPassword}, {where: {id: userId}}).then(function(updated) {
-              res.json({success: true, message: 'Password updated'});
-          });
-       });
-    };
-
     return externalRoutes;
+};
+
+var createBasicListsForUser = function(userId, app) {
+   var List = app.get('models').List;
+
+   console.log('criei listas');
+
+   List.create({
+     name: 'Todo',
+     userId: userId
+   });
+
+   List.create({
+     name: 'Done',
+     userId: userId
+   });
 };
