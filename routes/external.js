@@ -21,6 +21,7 @@ module.exports = function(app) {
 
           var access_token = Utils.createToken(user);
           List.findAll({
+            where: {userId: user.id},
             include: [{model: Task, attributes:['id','name']}]
           }).then(function(lists) {
              res.json({success: true, message: 'You are logged in.', user: user, token: access_token, lists: lists});
@@ -35,6 +36,8 @@ module.exports = function(app) {
             email: req.body.email,
             password: req.body.password,
          };
+
+         console.log(user);
 
          User.build(user).validate().then(function(result) {
             if(result) {

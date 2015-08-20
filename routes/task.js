@@ -4,13 +4,14 @@ module.exports = function(app) {
   var Task = app.get('models').Task;
 
   tasksRoute.addTask = function(req, res) {
+      var userId = req.credentials.userId;
       var name = req.body.name;
       if(!name || name == '') {
           res.json({sucess: false, message: 'Task name must be provided'});
           return;
       }
 
-      List.findOne({where: {name: 'Todo'}}).then(function(list){
+      List.findOne({where: {name: 'Todo', userId: userId}}).then(function(list){
         Task.create({
            name: name
         }).then(function(task) {
@@ -22,8 +23,9 @@ module.exports = function(app) {
   };
 
   tasksRoute.markTaskDone = function(req, res) {
+    var userId = req.credentials.userId;
     var id = req.params.id;
-    List.findOne({where: {name: 'Done'}}).then(function(list){
+    List.findOne({where: {name: 'Done', userId: userId}}).then(function(list){
       Task.findOne({where: {id: id} }).then(function(task) {
           if(!task) {
             res.json({success: false, message: 'Task not found.'});
@@ -38,7 +40,7 @@ module.exports = function(app) {
   };
 
   tasksRoute.deleteTask = function(req, res) {
-     var id = req.params.id;
+     var id = req.params.id;  Aaq
      Task.destroy({where: {id: id}}).then(function(success){
         if(success)
           res.json({success: true, msg:'Task deleted.'});

@@ -3,18 +3,21 @@ module.exports = function(app) {
     var Task = app.get('models').Task;
     var List = app.get('models').List;
 
-    listRoute.getAllLists = function(req, res){
+    listRoute.getAllLists = function(req, res) {
+       var userId = req.credentials.userId;
        List.findAll({
+         where: {userId: userId},
          include: [{model: Task, attributes:['id','name']}]
        }).then(function(lists) {
           res.json({success:true, lists:lists});
        });
     };
 
-    listRoute.getList = function(req, res){
+    listRoute.getList = function(req, res) {
+       var userId = req.credentials.userId;
        var id = req.params.id;
        List.findOne({
-         where: {id: id},
+         where: {id: id, userId: userId},
          include: [{model: Task, attributes:['id','name']}]
        }).then(function(list){
            if(list)
@@ -25,6 +28,7 @@ module.exports = function(app) {
     };
 
     listRoute.addTaskToList = function(req, res) {
+        var userId = req.credentials.userId;
         var listId = req.params.id;
         var taskName = req.body.name;
 
@@ -33,7 +37,7 @@ module.exports = function(app) {
             return;
         }
 
-        List.findOne({where: {id:listId}}).then(function(list){
+        List.findOne({where: {id:listId, userId: userId}}).then(function(list){
           if(!list) {
             res.json({sucess: false, message: 'List not found.'});
             return;
@@ -48,6 +52,7 @@ module.exports = function(app) {
     };
 
     listRoute.addList = function(req, res){
+        var userId = req.credentials.userId;
         var name = req.body.name;
 
         if(!name || name == '') {
@@ -56,15 +61,19 @@ module.exports = function(app) {
         }
 
         List.create({
-           name: name
+           name: name,
+           userId: userId
         }).then(function(list) {
              res.json({success: true, message: 'List created.', data:list });
+        }).catch(function(err) {
+             res.json({success: false, message: 'List already exists.'});
         });
     };
 
     listRoute.deleteList = function(req, res) {
+       var userId = req.credentials.userId;
        var id = req.params.id;
-       List.findOne({where: {id:id}}).then(function(list){
+       List.findOne({where: {id:id, userId: userId}}).then(function(list){
          if(!list) {
             res.json({success: false, message: 'List not found.'});
             return;
@@ -79,9 +88,10 @@ module.exports = function(app) {
      };
 
      listRoute.updateList = function(req, res) {
+        var userId = req.credentials.userId;
         var id = req.params.id;
         var updatedName = req.body.name;
-        List.update({name: updatedName}, {where: {id:id}}).then(function(updated) {
+        List.update({name: updatedName}, {where: {id:id, userId: userId}}).then(function(updated) {
            if(update > 0)
               res.json({success: true, message:'List updated.'});
            else
@@ -90,8 +100,9 @@ module.exports = function(app) {
      };
 
      listRoute.markListDone = function(req, res) {
+        var userId = req.credentials.userId;
         var id = req.params.id;
-        List.findOne({where: {name: 'Done'}}).then(function(list){
+        List.findOne({where: {name: 'Done', userId: userId}}).then(function(list){
           if(!list) {
             res.json({sucess: false, message: 'List not found.'});
             return;
