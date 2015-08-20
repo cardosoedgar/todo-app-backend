@@ -4,7 +4,7 @@ module.exports = function(app) {
   var User = app.get('models').User;
 
   var authorizeUser = function(req, res, next) {
-    var token = (req.body && req.body.access_token) || req.headers['x-access-token'];
+    var token = req.headers['x-access-token'];
 
     if(!token) {
       res.status(401);
