@@ -1,35 +1,43 @@
 # Todo App Backend (Node.js)
 
-## Properties
+## Public URLs
 
-**Task Properties** : name, list_id *(only for updating task)*
+#### External URLs
 
-**List Properties** : name
+*POST* **/login** - email and password
 
-## URLs
+*POST* **/signup** - email, password and name (opcional)
+
+## Private URLs (need x-access-token)
+
+#### Internal URLs
+
+*PUT* **/api/resetpassword** - old_password, new_password, confirm_password
 
 #### Task URLs
 
-*POST* **/task** - create task in default list (Todo)
+*POST* **/api/task** - name
 
-*PUT* **/task/:id** - update task
+*PUT* **/api/task/:id** - name and/or list_id
 
-*DELETE* **/task/:id** - delete task
+*DELETE* **/task/:id**
 
-*PUT* **/task/:id/done** - mark task as done (change task to done list)
+*PUT* **/task/:id/done**
 
 #### List URLs
 
-*POST* **/list** - create list
+*POST* **/api/list** - name
 
-*POST* **/list/:id/task** - create task in the chosen List
+*POST* **/api/list/:id/task** - name
 
-*GET* **/lists** - get all lists with all tasks
+*GET* **/api/lists**
 
-*GET* **/list/:id** - get tasks of the list
+*GET* **/api/list/:id**
 
-*PUT* **/list/:id** - update list name
+*PUT* **/api/list/:id** - name
 
-*DELETE* **/list:id** - delete list and all of its tasks
+*DELETE* **/api/list:id**
 
-*PUT* **/list/:id/done** - mark all tasks inside the list as done (change tasks to done list)
+*PUT* **/api/list/:id/done**
+
+*PUT* **/api/lists/sync**

@@ -40,7 +40,7 @@ module.exports = function(app) {
   };
 
   tasksRoute.deleteTask = function(req, res) {
-     var id = req.params.id;  Aaq
+     var id = req.params.id;
      Task.destroy({where: {id: id}}).then(function(success){
         if(success)
           res.json({success: true, msg:'Task deleted.'});
