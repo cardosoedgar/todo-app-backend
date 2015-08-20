@@ -6,7 +6,7 @@
 
 *POST* **/login** - email and password
 
-*POST* **/signup** - email, password and name (opcional)
+*POST* **/signup** - email, password and name (optional)
 
 ## Private URLs (need x-access-token)
 
