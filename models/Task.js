@@ -19,6 +19,13 @@ module.exports = function(sequelize) {
     }
   }, {
     timestamps: false,
+    instanceMethods: {
+      toJSON: function () {
+        var result = this.get({plain:true});
+        delete result['listId'];
+        return result;
+      }
+    }
   });
 
   return Task

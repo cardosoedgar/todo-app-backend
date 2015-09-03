@@ -10,11 +10,13 @@ module.exports = function(app) {
     externalRoutes.login = function(req, res) {
       User.findOne({where: { email: req.body.email }}).then(function(user) {
         if(!user) {
+           res.status(401);
            res.json({success: false, message: 'Email or password is incorrect.'});
            return;
          }
 
          if(!crypt.compareSync(req.body.password, user.password)) {
+           res.status(401);
            res.json({success: false, message: 'Email or password is incorrect.'});
            return;
          }
@@ -47,7 +49,6 @@ module.exports = function(app) {
              user.secret = uuid.v1();
              user.password = crypt.hashSync(req.body.password, crypt.genSaltSync(10));
              User.create(user).then(function(user) {
-                createBasicListsForUser(user.id, app);
                 res.json({success: true, message: 'You can now login.'});
              }).catch(function(err) {
                 res.json({success: false, message: err.errors[0].message});
@@ -56,20 +57,4 @@ module.exports = function(app) {
     };
 
     return externalRoutes;
-};
-
-var createBasicListsForUser = function(userId, app) {
-   var List = app.get('models').List;
-
-   console.log('criei listas');
-
-   List.create({
-     name: 'Todo',
-     userId: userId
-   });
-
-   List.create({
-     name: 'Done',
-     userId: userId
-   });
 };

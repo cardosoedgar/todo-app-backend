@@ -65,7 +65,7 @@ module.exports = function(app) {
            name: name,
            userId: userId
         }).then(function(list) {
-             res.json({success: true, message: 'List created.', data:list });
+             res.json({success: true, message: 'List created.', list:list });
         }).catch(function(err) {
              res.json({success: false, message: 'List already exists.'});
         });

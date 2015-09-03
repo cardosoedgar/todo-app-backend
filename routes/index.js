@@ -16,14 +16,13 @@ module.exports = function (app) {
   router.post('/api/resetpassword', internal.updatePassword);
 
 //tasks
-  router.put('/api/task/:id/done', task.markTaskDone);
-  router.post('/api/task', task.addTask);
+  // router.put('/api/task/:id/done', task.markTaskDone);
   router.put('/api/task/:id', task.updateTask);
   router.delete('/api/task/:id', task.deleteTask);
 
 //list
-  router.put('/api/list/:id/task/:id/done', task.markTaskDone);
-  router.put('/api/list/:id/done', list.markListDone);
+  // router.put('/api/list/:id/task/:id/done', task.markTaskDone);
+  // router.put('/api/list/:id/done', list.markListDone);
   router.post('/api/list/:id/task', list.addTaskToList);
   router.post('/api/list', list.addList);
   router.get('/api/lists', list.getAllLists);
