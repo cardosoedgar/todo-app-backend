@@ -3,54 +3,39 @@ module.exports = function(app) {
   var List = app.get('models').List;
   var Task = app.get('models').Task;
 
-  tasksRoute.addTask = function(req, res) {
-      var userId = req.credentials.userId;
-      var name = req.body.name;
-      if(!name || name == '') {
-          res.json({sucess: false, message: 'Task name must be provided'});
-          return;
-      }
+  tasksRoute.markTaskUndone = function(req, res) {
+    var id = req.params.taskid;
 
-      List.findOne({where: {name: 'Todo', userId: userId}}).then(function(list){
-        Task.create({
-           name: name
-        }).then(function(task) {
-             list.addTask(task).then(function(success) {
-                res.json({success: true, message: 'Task created.', data:task });
-             });
-        });
+    Task.update({done: false}, {where: {id: id} }).then(function(updated){
+       if(updated > 0)
+          res.json({success: true, message: 'task marked undone'});
+       else
+          res.json({success: false, message: 'task not found'});
     });
   };
 
   tasksRoute.markTaskDone = function(req, res) {
-    var userId = req.credentials.userId;
-    var id = req.params.id;
-    List.findOne({where: {name: 'Done', userId: userId}}).then(function(list){
-      Task.findOne({where: {id: id} }).then(function(task) {
-          if(!task) {
-            res.json({success: false, message: 'Task not found.'});
-            return;
-          }
-
-          task.setList(list).then(function(success) {
-             res.json({success: true, message: 'Task marked as done.', data:task });
-          });
-      });
+    var id = req.params.taskid;
+    Task.update({done: true}, {where: {id: id} }).then(function(updated){
+       if(updated > 0)
+          res.json({success: true, message: 'task marked as done'});
+       else
+          res.json({success: false, message: 'task not found'});
     });
   };
 
   tasksRoute.deleteTask = function(req, res) {
-     var id = req.params.id;
+     var id = req.params.taskid;
      Task.destroy({where: {id: id}}).then(function(success){
         if(success)
-          res.json({success: true, msg:'Task deleted.'});
+          res.json({success: true, message:'Task deleted.'});
         else
-          res.json({success: false, msg: 'Task not found.'});
+          res.json({success: false, message: 'Task not found.'});
      });
    };
 
    tasksRoute.updateTask = function(req, res) {
-      var id = req.params.id;
+      var id = req.params.taskid;
       var updatedName = req.body.name;
       var listId = req.body.list_id;
       var data = {};
@@ -69,13 +54,11 @@ module.exports = function(app) {
 
       Task.update(data, {where: {id:id}}).then(function(updated){
          if(updated > 0)
-           res.json({success: true, msg:'Task updated.'});
+           res.json({success: true, message:'Task updated.'});
          else
-           res.json({success: false, msg: 'Task not found.'});
+           res.json({success: false, message: 'Task not found.'});
       });
    }
 
   return tasksRoute;
 };
-
-//helper methods

@@ -7,7 +7,7 @@ module.exports = function(app) {
        var userId = req.credentials.userId;
        List.findAll({
          where: {userId: userId},
-         include: [{model: Task, attributes:['id','name']}],
+         include: [{model: Task, attributes:['id','name', 'done']}],
          order: [['name','ASC']]
        }).then(function(lists) {
           res.json({success:true, lists:lists});
@@ -19,7 +19,7 @@ module.exports = function(app) {
        var id = req.params.id;
        List.findOne({
          where: {id: id, userId: userId},
-         include: [{model: Task, attributes:['id','name']}]
+         include: [{model: Task, attributes:['id','name', 'done']}]
        }).then(function(list){
            if(list)
               res.json({sucess:true, list: list});
@@ -103,15 +103,16 @@ module.exports = function(app) {
      listRoute.markListDone = function(req, res) {
         var userId = req.credentials.userId;
         var id = req.params.id;
-        List.findOne({where: {name: 'Done', userId: userId}}).then(function(list){
-          if(!list) {
-            res.json({sucess: false, message: 'List not found.'});
-            return;
-          }
+        Task.update({done: true}, {where: {listId: id}}).then(function(){
+            res.json({sucess: true, message: 'All tasks marked done.'});
+        });
+     };
 
-          Task.update({ListId: list.id}, {where: {ListId: id}}).then(function(updated) {
-              res.json({success: true, message: 'All tasks marked as done.'});
-          });
+     listRoute.markListUndone = function(req, res) {
+        var userId = req.credentials.userId;
+        var id = req.params.id;
+        Task.update({done: false}, {where: {listId: id}}).then(function(){
+            res.json({sucess: true, message: 'All tasks marked undone.'});
         });
      };
 

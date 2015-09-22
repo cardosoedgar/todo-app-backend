@@ -5,16 +5,7 @@ module.exports = function(sequelize) {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: {msg: 'Invalid list name.'},
-        isUnique: function (name, done) {
-            var self = this;
-            List.find({ where: {name: name,userId:self.userId}}).done(function (name) {
-                    if (name) {
-                        done(new Error('List already exist.'));
-                    }
-                    done();
-            });
-        }
+        notEmpty: {msg: 'Invalid list name.'}
       }
     },
     userId: {
